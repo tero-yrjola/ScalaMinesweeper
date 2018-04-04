@@ -10,16 +10,17 @@ case class Mine(override val clicked: Boolean) extends Cell(clicked)
 case class Empty(override val clicked: Boolean) extends Cell(clicked)
 
 object Main {
+  val allowedNumbers = List("4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20")
   def main(args: Array[String]) {
     val rows = IO.GetResp(
-          "How many rows? (12-20)",
-          "Please enter a number from 12 to 20.",
-          List("12", "13", "14", "15", "16", "17", "18", "19", "20")).toInt
+          "How many rows? (4-20)",
+          "Please enter a number from 4 to 20.",
+          allowedNumbers).toInt
     
     val columns = IO.GetResp(
-          "How many columns? (12-20)",
-          "Please enter a number from 12 to 20.",
-          List("12", "13", "14", "15", "16", "17", "18", "19", "20")).toInt
+          "How many columns? (4-20)",
+          "Please enter a number from 4 to 20.",
+          allowedNumbers).toInt
 
     val maxBombs = rows * columns -1
     val allowedBombAmountList = List.range(1, maxBombs+1).map(_.toString)
@@ -41,21 +42,22 @@ object Main {
   def PutBombs(rowIndex: Int, columnIndex: Int, board: List[List[Cell]], bombs: Int):List[List[Cell]]={
     val boardHeight = board.size
     val boardWidth = board(0).size
-    if (rowIndex == boardHeight-1 && columnIndex == boardWidth) return board
 
-    val rng = new scala.util.Random
-    val handledCells = rowIndex+1 + (columnIndex*(boardWidth))
+    val handledCells = rowIndex + (columnIndex*(boardHeight))
+    //exit condition
+    if (bombs < 1){
+      return board
+    }
+    val rng = new scala.util.Random    
     val newColumnIndex = if (rowIndex >= boardHeight-1) columnIndex +1 else columnIndex
     val newRowIndex = if (rowIndex >= boardHeight-1) 0 else rowIndex+1
-
-    if (bombs > 0)
-      if (rng.nextInt(boardHeight*boardWidth - handledCells) < bombs){
-        val newBoardWithOneMoreBomb = PutBomb(newRowIndex, newColumnIndex, board)
-        val newBoard = PutBombs(newRowIndex, newColumnIndex, newBoardWithOneMoreBomb, bombs-1)
-        return newBoard2
-      } else {
-        val newBoard = PutBombs(newRowIndex, newColumnIndex, board, bombs)
-        return newBoard
+    if (rng.nextInt(boardHeight*boardWidth - handledCells) < bombs){
+      val newBoardWithOneMoreBomb = PutBomb(rowIndex, columnIndex, board)
+      val newBoard = PutBombs(newRowIndex, newColumnIndex, newBoardWithOneMoreBomb, bombs-1)
+      return newBoard
+    } else {
+      val newBoard = PutBombs(newRowIndex, newColumnIndex, board, bombs)
+      return newBoard
     }
     board
   } 
