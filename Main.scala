@@ -34,18 +34,7 @@ object Main {
   }
   def GenerateNewBoard(rows: Int, columns: Int, bombs: Int): List[List[Cell]] = {
     val emptyBoard: List[List[Cell]] = List.tabulate(rows)(_ => List.tabulate(columns)(_ => new Empty(false)))
-    // var bombsLeft = bombs
-    // val rng = new scala.util.Random
-
     val gameBoard = PutBombs(0, 0, emptyBoard, bombs)
-    // for (rowIndex <- 0 to rows-1; columnIndex <- 0 to columns-1){
-    //   if(rng.nextInt(boardSize - counter) < bombsLeft){
-    //     newBoard = putBomb(rowIndex, columnIndex, board)
-    //     bombsLeft -= 1;
-    //     if (bombsLeft == 0)
-    //   }
-    //   counter += 1
-    // }
     gameBoard
   }
 
