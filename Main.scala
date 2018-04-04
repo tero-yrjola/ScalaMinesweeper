@@ -25,7 +25,7 @@ object Main {
     val allowedBombAmountList = List.range(1, maxBombs+1).map(_.toString)
 
     val bombs = IO.GetResp(
-          s"How many bombs? (12-$maxBombs)",
+          s"How many bombs? (1-$maxBombs)",
           s"Please enter a number from 1 to $maxBombs.",
           allowedBombAmountList).toInt
 
