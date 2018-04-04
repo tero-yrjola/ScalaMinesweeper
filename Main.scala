@@ -50,14 +50,13 @@ object Main {
 
     if (bombs > 0)
       if (rng.nextInt(boardHeight*boardWidth - handledCells) < bombs){
-        val newBoard:List[List[Cell]] = PutBomb(newRowIndex, newColumnIndex, board)
-        val newBoard2 = PutBombs(newRowIndex, newColumnIndex, newBoard, bombs-1)
+        val newBoardWithOneMoreBomb = PutBomb(newRowIndex, newColumnIndex, board)
+        val newBoard = PutBombs(newRowIndex, newColumnIndex, newBoardWithOneMoreBomb, bombs-1)
         return newBoard2
       } else {
-        val newBoard:List[List[Cell]] = board
-        val newBoard2 = PutBombs(newRowIndex, newColumnIndex, newBoard, bombs)
-        return newBoard2
-}
+        val newBoard = PutBombs(newRowIndex, newColumnIndex, board, bombs)
+        return newBoard
+    }
     board
   } 
 
@@ -79,6 +78,6 @@ object Main {
   def GetPrintable[T](typeOfCell: T) = typeOfCell match {
   case _: Empty    => "[ ]"
   case _: Mine => "[x]"
-  case _         => "Unknown"
+  case _         => "[?]"
 }
 }
