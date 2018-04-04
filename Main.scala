@@ -31,8 +31,9 @@ object Main {
           allowedBombAmountList).toInt
 
     val board:List[List[Cell]] = GenerateNewBoard(rows, columns, bombs)
-    PrintBoard(board)
-  }
+    IO.PrintBoard(board)
+  }  
+
   def GenerateNewBoard(rows: Int, columns: Int, bombs: Int): List[List[Cell]] = {
     val emptyBoard: List[List[Cell]] = List.tabulate(rows)(_ => List.tabulate(columns)(_ => new Empty(false)))
     val gameBoard = PutBombs(0, 0, emptyBoard, bombs)
@@ -66,29 +67,4 @@ object Main {
     val newBoard: List[List[Cell]] = board.updated(x, board(x).updated(y, Mine(false)))
     return newBoard
   }
-
-  def PrintBoard(board: List[List[Cell]]){
-    print("   ")
-    val columns = board(0).size
-    if (columns < 9) for (i <- 1 to columns) print(i + "   ")
-    else{
-      for (i <- 1 to 8) print(i + "   ")
-      for (i <- 9 to columns) print (i + "  ")
-    }
-    println()
-    for(i <- 0 to board.size -1){
-      print((i+97).asInstanceOf[Char] + " ")
-      for(j <- 0 to board(0).size -1){
-        print(GetPrintable(board(i)(j)))
-        print(" ")
-        }
-      println()
-    }
-  }
-
-  def GetPrintable[T](typeOfCell: T) = typeOfCell match {
-  case _: Empty    => "[ ]"
-  case _: Mine => "[x]"
-  case _         => "[?]"
-}
 }
