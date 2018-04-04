@@ -29,36 +29,67 @@ object Main {
           s"Please enter a number from 1 to $maxBombs.",
           allowedBombAmountList).toInt
 
-    val board = GenerateNewBoard(rows, columns, bombs)
+    val board:List[List[Cell]] = GenerateNewBoard(rows, columns, bombs)
     PrintBoard(board)
   }
   def GenerateNewBoard(rows: Int, columns: Int, bombs: Int): List[List[Cell]] = {
-    val board: List[List[Cell]] = List.tabulate(rows)(_ => List.tabulate(columns)(_ => new Empty(false)))
-    var bombsLeft = bombs
-    val rng = new scala.util.Random
-    val boardSize = rows*columns
-    var counter = 0
-    for (rowIndex <- 0 to rows-1; columnIndex <- 0 to columns-1){
-      if(rng.nextInt(boardSize - counter) < bombsLeft){
-        val newBoard = putBomb(rowIndex, columnIndex, board)
-        bombsLeft -= 1;
-        if (counter >= boardSize -1) newBoard
-      }
-      counter += 1
-    }
+    val emptyBoard: List[List[Cell]] = List.tabulate(rows)(_ => List.tabulate(columns)(_ => new Empty(false)))
+    // var bombsLeft = bombs
+    // val rng = new scala.util.Random
+
+    val gameBoard = PutBombs(0, 0, emptyBoard, bombs)
+    // for (rowIndex <- 0 to rows-1; columnIndex <- 0 to columns-1){
+    //   if(rng.nextInt(boardSize - counter) < bombsLeft){
+    //     newBoard = putBomb(rowIndex, columnIndex, board)
+    //     bombsLeft -= 1;
+    //     if (bombsLeft == 0)
+    //   }
+    //   counter += 1
+    // }
+    gameBoard
   }
 
-  def putBomb(x: Int, y: Int, board: List[List[Cell]]):List[List[Cell]] = {
-    val newBoard = board.updated(x, board(x).updated(y, Mine(false)))
+  def PutBombs(rowIndex: Int, columnIndex: Int, board: List[List[Cell]], bombs: Int):List[List[Cell]]={
+    val boardHeight = board.size
+    val boardWidth = board(0).size
+    if (rowIndex == boardHeight-1 && columnIndex == boardWidth) return board
+
+    val rng = new scala.util.Random
+    val handledCells = rowIndex+1 + (columnIndex*(boardWidth))
+    val newColumnIndex = if (rowIndex >= boardHeight-1) columnIndex +1 else columnIndex
+    val newRowIndex = if (rowIndex >= boardHeight-1) 0 else rowIndex+1
+
+    if (bombs > 0)
+      if (rng.nextInt(boardHeight*boardWidth - handledCells) < bombs){
+        val newBoard:List[List[Cell]] = PutBomb(newRowIndex, newColumnIndex, board)
+        val newBoard2 = PutBombs(newRowIndex, newColumnIndex, newBoard, bombs-1)
+        return newBoard2
+      } else {
+        val newBoard:List[List[Cell]] = board
+        val newBoard2 = PutBombs(newRowIndex, newColumnIndex, newBoard, bombs)
+        return newBoard2
+}
+    board
+  } 
+
+  def PutBomb(x: Int, y: Int, board: List[List[Cell]]):List[List[Cell]] = {
+    val newBoard: List[List[Cell]] = board.updated(x, board(x).updated(y, Mine(false)))
+    return newBoard
   }
 
   def PrintBoard(board: List[List[Cell]]){
     for(i <- 0 to board.size -1){
       for(j <- 0 to board(0).size -1){
-        print(board(i)(j))
+        print(GetPrintable(board(i)(j)))
         print(" ")
         }
       println()
     }
   }
+
+  def GetPrintable[T](typeOfCell: T) = typeOfCell match {
+  case _: Empty    => "[ ]"
+  case _: Mine => "[x]"
+  case _         => "Unknown"
+}
 }
