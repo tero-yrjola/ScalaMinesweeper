@@ -40,7 +40,7 @@ object Main {
     val columns = board(0).size
     val rows = board.size
     val validChars = List.range('a', 'z').map(_.toString).take(rows)
-    val validNumbers = List.range(1, rows+1).map(_.toString)
+    val validNumbers = List.range(1, columns+1).map(_.toString)
     // while(true){
       val guess = IO.GetResp(
         "Guess a cell!",

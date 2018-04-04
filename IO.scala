@@ -14,8 +14,8 @@ object IO {
 	        println(prompt2)
 	        resp = ReadInput
       } else if (!allowed2.isEmpty){
-        if(resp.length == 2){
-          if(allowed.contains(resp.charAt(0).toString) && allowed2.contains(resp.charAt(1).toString)){
+        if(resp.length == 2 || resp.length==2){
+          if(allowed.contains(resp.charAt(0).toString) && (allowed2.contains(resp.charAt(1).toString))){
             done = true
           } else{
             println(prompt2)
