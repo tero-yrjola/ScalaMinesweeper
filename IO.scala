@@ -4,18 +4,31 @@ object IO {
     resp.toLowerCase
   }
 
-  def GetResp(prompt1 : String, prompt2 : String, allowed : List[String]) : String = {
-    println(prompt1 + " ")
+  def GetResp(prompt1 : String, prompt2 : String, allowed : List[String], allowed2 : List[String] = List()) : String = {
+    println(prompt1)
     var resp = ReadInput    
     var done = false
     while (!done) {
+      Console.out.flush
       if (resp == "") {
-	        print(prompt2 + " ")
+	        println(prompt2)
 	        resp = ReadInput
+      } else if (!allowed2.isEmpty){
+        if(resp.length == 2){
+          if(allowed.contains(resp.charAt(0).toString) && allowed2.contains(resp.charAt(1).toString)){
+            done = true
+          } else{
+            println(prompt2)
+            resp = ReadInput
+          }
+        } else{
+          println(prompt2)
+          resp = ReadInput
+        }
       } else if (allowed.contains(resp)) {
 	      done = true
       } else {
-	      println(prompt2 + " ")
+	      println(prompt2)
 	      resp = ReadInput
       }
     }

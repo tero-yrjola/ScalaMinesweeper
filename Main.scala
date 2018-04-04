@@ -32,7 +32,22 @@ object Main {
 
     val board:List[List[Cell]] = GenerateNewBoard(rows, columns, bombs)
     IO.PrintBoard(board)
+
+    StartGame(board)
   }  
+
+  def StartGame(board: List[List[Cell]]){
+    val columns = board(0).size
+    val rows = board.size
+    val validChars = List.range('a', 'z').map(_.toString).take(rows)
+    val validNumbers = List.range(1, rows+1).map(_.toString)
+    // while(true){
+      val guess = IO.GetResp(
+        "Guess a cell!",
+        s"Make a guess from (a-${validChars.last})(1-${validNumbers.last}). For example 'b2'.",
+        validChars, validNumbers)
+      // }
+  }
 
   def GenerateNewBoard(rows: Int, columns: Int, bombs: Int): List[List[Cell]] = {
     val emptyBoard: List[List[Cell]] = List.tabulate(rows)(_ => List.tabulate(columns)(_ => new Empty(false)))
