@@ -53,7 +53,7 @@ object Main {
         val newBoard = clickCell(guess, board)
       }
   }
-  def clickCell(guessInput: String, board: List[List[Cell]]):List[List[Cell]]={
+  def ClickCell(guessInput: String, board: List[List[Cell]]):List[List[Cell]]={
     val guess = (guessInput(0).asDigit -10,        //'a' gives 10, 'b' gives 11 etc.
                  guessInput.substring(1).toInt -1)   //-1 because arrays start at 0 (and the printable board at 1)
 
@@ -63,15 +63,19 @@ object Main {
     return board
   }
 
-  def showCell(x: Int, y: Int, board: List[List[Cell]]): List[List[Cell]]={
+  def ShowCell(x: Int, y: Int, board: List[List[Cell]]): List[List[Cell]]={
     val cell = board(x)(y)
 
-    cell match{
-      case _: Mine => throw new Exception("Game over.");
-      case _ => 0
-    }
+    if (isBomb(cell)) throw new Exception("Game over.");
 
     return board
+  }
+
+  def IsBomb(cell: Cell)={
+    cell match{
+      case _: Mine => true;
+      case _ => false
+    }
   }
   def GenerateNewBoard(rows: Int, columns: Int, bombs: Int): List[List[Cell]] = {
     val emptyBoard: List[List[Cell]] = List.tabulate(rows)(_ => List.tabulate(columns)(_ => new Empty(false)))
