@@ -1,13 +1,16 @@
 import java.util.Random
 import IO._
 
-abstract class Cell(isValueShown: Boolean)
+abstract class Cell(isCellClicked: Boolean)
     {
-    val clicked: Boolean = isValueShown
+    val clicked: Boolean = isCellClicked
     }
 
 case class Mine(override val clicked: Boolean) extends Cell(clicked)
 case class Empty(override val clicked: Boolean) extends Cell(clicked)
+case class Hint(override val clicked: Boolean, val hint: Int) extends Cell(clicked) {
+  val minesNear = hint
+}
 
 object Main {
   val allowedNumbers = List("4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20")
@@ -41,14 +44,35 @@ object Main {
     val rows = board.size
     val validChars = List.range('a', 'z').map(_.toString).take(rows)
     val validNumbers = List.range(1, columns+1).map(_.toString)
-    // while(true){
+    while(true){
       val guess = IO.GetResp(
         "Guess a cell!",
         s"Make a guess from (a-${validChars.last})(1-${validNumbers.last}). For example 'b2'.",
         validChars, validNumbers)
-      // }
+
+        val newBoard = clickCell(guess, board)
+      }
+  }
+  def clickCell(guessInput: String, board: List[List[Cell]]):List[List[Cell]]={
+    val guess = (guessInput(0).asDigit -10,        //'a' gives 10, 'b' gives 11 etc.
+                 guessInput.substring(1).toInt -1)   //-1 because arrays start at 0 (and the printable board at 1)
+
+    val newBoard = showCell(guess._1, guess._2, board)
+    val newBoard2: List[List[Cell]] = board.updated(guess._1, board(guess._1).updated(guess._2, Hint(false,2)))
+    IO.PrintBoard(newBoard2)
+    return board
   }
 
+  def showCell(x: Int, y: Int, board: List[List[Cell]]): List[List[Cell]]={
+    val cell = board(x)(y)
+
+    cell match{
+      case _: Mine => throw new Exception("Game over.");
+      case _ => 0
+    }
+
+    return board
+  }
   def GenerateNewBoard(rows: Int, columns: Int, bombs: Int): List[List[Cell]] = {
     val emptyBoard: List[List[Cell]] = List.tabulate(rows)(_ => List.tabulate(columns)(_ => new Empty(false)))
     val gameBoard = PutBombs(0, 0, emptyBoard, bombs)
@@ -82,4 +106,6 @@ object Main {
     val newBoard: List[List[Cell]] = board.updated(x, board(x).updated(y, Mine(false)))
     return newBoard
   }
+
+
 }
