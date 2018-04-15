@@ -50,28 +50,53 @@ object Main {
         s"Make a guess from (a-${validChars.last})(1-${validNumbers.last}). For example 'b2'.",
         validChars, validNumbers)
 
-        val newBoard = clickCell(guess, board)
+        val newBoard = ClickCell(guess, board)
       }
   }
   def ClickCell(guessInput: String, board: List[List[Cell]]):List[List[Cell]]={
     val guess = (guessInput(0).asDigit -10,        //'a' gives 10, 'b' gives 11 etc.
                  guessInput.substring(1).toInt -1)   //-1 because arrays start at 0 (and the printable board at 1)
 
-    val newBoard = showCell(guess._1, guess._2, board)
-    val newBoard2: List[List[Cell]] = board.updated(guess._1, board(guess._1).updated(guess._2, Hint(false,2)))
-    IO.PrintBoard(newBoard2)
-    return board
+    val newBoard = ShowCell(guess._1, guess._2, board)
+    IO.PrintBoard(newBoard)
+    return newBoard;
   }
 
   def ShowCell(x: Int, y: Int, board: List[List[Cell]]): List[List[Cell]]={
     val cell = board(x)(y)
 
-    if (isBomb(cell)) throw new Exception("Game over.");
-
-    return board
+    if (IsMine(cell)) throw new Exception("Game over.");
+    else {
+      val hintValue = CountSurroundingMines(x, y, board)
+      return board.updated(x, board(x).updated(y, Hint(true, hintValue)))
+    }
+    return board;
   }
 
-  def IsBomb(cell: Cell)={
+  def CountSurroundingMines(clickedCellX: Int, clickedCellY: Int, board: List[List[Cell]]): Int={
+    var numberOfMines = 0;
+    for (yOffset <- -1 to 1){
+      if (yOffset != 0){
+        for (xOffset <- -1 to 1){
+          if (IsMineAndWithinBoundaries(clickedCellX + xOffset, clickedCellY + yOffset, board)) numberOfMines += 1;
+          }
+        } else {
+          if (IsMineAndWithinBoundaries(clickedCellX-1, clickedCellY, board)) numberOfMines += 1;
+          if (IsMineAndWithinBoundaries(clickedCellX+1, clickedCellY, board)) numberOfMines += 1;
+        }
+        }
+        println(numberOfMines);
+        return numberOfMines;
+      }
+
+  def IsMineAndWithinBoundaries(x: Int, y: Int, board: List[List[Cell]]): Boolean ={
+    if (x < board.size && x >= 0){
+      if (y < board(0).size && y >= 0)
+      return IsMine(board(x)(y));
+    }
+    return false;
+  }
+  def IsMine(cell: Cell)={
     cell match{
       case _: Mine => true;
       case _ => false

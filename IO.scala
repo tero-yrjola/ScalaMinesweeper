@@ -9,11 +9,15 @@ object IO {
     var resp = ReadInput    
     var done = false
     while (!done) {
+      
       Console.out.flush
       if (!allowed2.isEmpty){
         if(resp.length == 2){
           if(allowed.contains(resp.charAt(0).toString) && (allowed2.contains(resp.charAt(1).toString))){
             done = true
+            } else {
+              println(prompt2)
+              resp = ReadInput
             }
           } else if (resp.length == 3){
             if(allowed.contains(resp.charAt(0).toString) && (allowed2.contains((resp.charAt(1).toString + resp.charAt(2))))){
@@ -59,7 +63,7 @@ object IO {
   def GetPrintable(cell: Cell) =  (cell.clicked) match {
     case  true => cell match{
       case _: Mine => "[x]"
-      case _: Hint => s"[{cell.asInstanceOf[Hint].cellsNear}]"
+      case _: Hint => s"[${cell.asInstanceOf[Hint].minesNear}]"
       case _: Empty => "[e]"
     }
     case  false => "[ ]"
@@ -68,6 +72,6 @@ object IO {
   def GetPrintableDebug[T](typeOfCell: T) = typeOfCell match {
     case _: Empty    => "[ ]"
     case _: Mine => "[x]"
-    case _         => "[?]"
+    case _: Hint        => s"[${typeOfCell.asInstanceOf[Hint].minesNear}]"
   }
 }
