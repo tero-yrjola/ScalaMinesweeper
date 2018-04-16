@@ -126,7 +126,7 @@ object Main {
                          ShowCell(originalX+1,originalY-1,
                          ShowCell(originalX-1,originalY-1,board))))))))
 
-          return ShowSurroundingCells(originalX, originalY, index +1, UpdateCellToHint(xToOpen, yToOpen, hintValue, newBoard))
+          return newBoard
         }
         return ShowSurroundingCells(originalX, originalY, index +1, UpdateCellToHint(xToOpen, yToOpen, hintValue, board))
       }
