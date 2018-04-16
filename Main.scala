@@ -51,54 +51,107 @@ object Main {
         validChars, validNumbers)
 
         val newBoard = ClickCell(guess, board)
+        StartGame(newBoard)
       }
   }
+
   def ClickCell(guessInput: String, board: List[List[Cell]]):List[List[Cell]]={
     val guess = (guessInput(0).asDigit -10,        //'a' gives 10, 'b' gives 11 etc.
                  guessInput.substring(1).toInt -1)   //-1 because arrays start at 0 (and the printable board at 1)
 
     val newBoard = ShowCell(guess._1, guess._2, board)
     IO.PrintBoard(newBoard)
-    return newBoard;
+    return newBoard
   }
 
   def ShowCell(x: Int, y: Int, board: List[List[Cell]]): List[List[Cell]]={
+    if (!IsWithinBoundaries(x, y, board)) return board
     val cell = board(x)(y)
+    if (cell.clicked == true) return board
 
-    if (IsMine(cell)) throw new Exception("Game over.");
+    if (IsMine(cell)) throw new Exception("Game over.")
     else {
       val hintValue = CountSurroundingMines(x, y, board)
-      return board.updated(x, board(x).updated(y, Hint(true, hintValue)))
+      val newBoard = UpdateCellToHint(x, y, hintValue, board)
+      
+      if (hintValue == 0){
+        return ShowSurroundingCells(x, y, 0, newBoard)
+      }
+      return newBoard
     }
-    return board;
+    return board
+  }
+
+  def UpdateCellToHint(x: Int, y: Int, hintValue: Int, board: List[List[Cell]]): List[List[Cell]]={
+    return board.updated(x, board(x).updated(y, Hint(true, hintValue)))
+  }
+
+  // we calculate the neighbours' coordinates (the offset from original cell) from index
+  // [0] [1] [2]
+  // [3] [o] [5]    o = original opened cell, that had a hintValue of 0
+  // [6] [7] [8]  
+  def ShowSurroundingCells(originalX: Int, originalY: Int, index: Int, board: List[List[Cell]]): List[List[Cell]]={
+    if (index >= 9) return board
+    if (index == 4) return ShowSurroundingCells(originalX, originalY, index +1, board)
+
+    val xOffset = index/3 % 3 -1
+    val yOffset = index % 3 -1
+    val xToOpen = originalX + xOffset
+    val yToOpen = originalY + yOffset
+    
+    if (IsWithinBoundaries(xToOpen, yToOpen, board)) {
+      if(board(xToOpen)(yToOpen).clicked == false){
+        val hintValue = CountSurroundingMines(xToOpen, yToOpen, board)
+        if (hintValue == 0){
+          val newBoard = ShowCell(originalX,originalY+1,
+                         ShowCell(originalX,originalY-1,
+                         ShowCell(originalX+1,originalY,
+                         ShowCell(originalX-1,originalY,
+                         ShowCell(originalX+1,originalY+1,
+                         ShowCell(originalX-1,originalY+1,
+                         ShowCell(originalX+1,originalY-1,
+                         ShowCell(originalX-1,originalY-1,board))))))))
+
+          return ShowSurroundingCells(originalX, originalY, index +1, UpdateCellToHint(xToOpen, yToOpen, hintValue, newBoard))
+        }
+        return ShowSurroundingCells(originalX, originalY, index +1, UpdateCellToHint(xToOpen, yToOpen, hintValue, board))
+      }
+    }
+    return ShowSurroundingCells(originalX, originalY, index +1, board)
   }
 
   def CountSurroundingMines(clickedCellX: Int, clickedCellY: Int, board: List[List[Cell]]): Int={
-    var numberOfMines = 0;
+    var numberOfMines = 0
     for (yOffset <- -1 to 1){
       if (yOffset != 0){
         for (xOffset <- -1 to 1){
-          if (IsMineAndWithinBoundaries(clickedCellX + xOffset, clickedCellY + yOffset, board)) numberOfMines += 1;
+          if (IsMineAndWithinBoundaries(clickedCellX + xOffset, clickedCellY + yOffset, board)) numberOfMines += 1
           }
         } else {
-          if (IsMineAndWithinBoundaries(clickedCellX-1, clickedCellY, board)) numberOfMines += 1;
-          if (IsMineAndWithinBoundaries(clickedCellX+1, clickedCellY, board)) numberOfMines += 1;
+          if (IsMineAndWithinBoundaries(clickedCellX-1, clickedCellY, board)) numberOfMines += 1
+          if (IsMineAndWithinBoundaries(clickedCellX+1, clickedCellY, board)) numberOfMines += 1
         }
         }
-        println(numberOfMines);
-        return numberOfMines;
+        return numberOfMines
       }
 
   def IsMineAndWithinBoundaries(x: Int, y: Int, board: List[List[Cell]]): Boolean ={
+      if (IsWithinBoundaries(x, y, board))
+      return IsMine(board(x)(y))
+    
+    return false
+  }
+
+  def IsWithinBoundaries(x: Int, y: Int, board: List[List[Cell]]): Boolean ={
     if (x < board.size && x >= 0){
       if (y < board(0).size && y >= 0)
-      return IsMine(board(x)(y));
-    }
-    return false;
-  }
+      return true
+    } 
+    return false
+   }
   def IsMine(cell: Cell)={
     cell match{
-      case _: Mine => true;
+      case _: Mine => true
       case _ => false
     }
   }

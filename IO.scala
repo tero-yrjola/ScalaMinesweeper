@@ -53,7 +53,8 @@ object IO {
     for(i <- 0 to board.size -1){
       print((i+97).asInstanceOf[Char] + " ")
       for(j <- 0 to board(0).size -1){
-        print(GetPrintableDebug(board(i)(j)))
+        print(GetPrintable(board(i)(j)))
+        //print(GetPrintableDebug(board(i)(j)))
         print(" ")
         }
       println()
