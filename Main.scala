@@ -36,10 +36,10 @@ object Main {
     val board:List[List[Cell]] = GenerateNewBoard(rows, columns, bombs)
     IO.PrintBoard(board)
 
-    StartGame(board)
+    Game(board)
   }  
 
-  def StartGame(board: List[List[Cell]]){
+  def Game(board: List[List[Cell]]){
     if (NoEmptyCells(board)){
       println("You won!")
     }
@@ -54,7 +54,7 @@ object Main {
         validChars, validNumbers)
 
       val newBoard = ClickCell(guess, board)
-      StartGame(newBoard)
+      Game(newBoard)
     }
   }
 
