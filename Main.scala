@@ -40,19 +40,33 @@ object Main {
   }  
 
   def StartGame(board: List[List[Cell]]){
-    val columns = board(0).size
-    val rows = board.size
-    val validChars = List.range('a', 'z').map(_.toString).take(rows)
-    val validNumbers = List.range(1, columns+1).map(_.toString)
-    while(true){
+    if (NoEmptyCells(board)){
+      println("You won!")
+    }
+    else {
+      val columns = board(0).size
+      val rows = board.size
+      val validChars = List.range('a', 'z').map(_.toString).take(rows)
+      val validNumbers = List.range(1, columns+1).map(_.toString)
       val guess = IO.GetResp(
         "Guess a cell!",
         s"Make a guess from (a-${validChars.last})(1-${validNumbers.last}). For example 'b2'.",
         validChars, validNumbers)
 
-        val newBoard = ClickCell(guess, board)
-        StartGame(newBoard)
+      val newBoard = ClickCell(guess, board)
+      StartGame(newBoard)
+    }
+  }
+
+  def NoEmptyCells(board: List[List[Cell]]):Boolean = {
+    val columns = board(0).size-1
+    val rows = board.size-1
+    for (column <- 0 to columns){
+      for(row <- 0 to rows){
+        if (board(row)(column).isInstanceOf[Empty]) return false
+        }
       }
+    return true
   }
 
   def ClickCell(guessInput: String, board: List[List[Cell]]):List[List[Cell]]={
