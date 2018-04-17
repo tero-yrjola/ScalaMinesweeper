@@ -140,14 +140,14 @@ object Main {
       if (yOffset != 0){
         for (xOffset <- -1 to 1){
           if (IsMineAndWithinBoundaries(clickedCellX + xOffset, clickedCellY + yOffset, board)) numberOfMines += 1
-          }
-        } else {
-          if (IsMineAndWithinBoundaries(clickedCellX-1, clickedCellY, board)) numberOfMines += 1
-          if (IsMineAndWithinBoundaries(clickedCellX+1, clickedCellY, board)) numberOfMines += 1
         }
-        }
-        return numberOfMines
+      } else {
+        if (IsMineAndWithinBoundaries(clickedCellX-1, clickedCellY, board)) numberOfMines += 1
+        if (IsMineAndWithinBoundaries(clickedCellX+1, clickedCellY, board)) numberOfMines += 1
       }
+    }
+    return numberOfMines
+  }
 
   def IsMineAndWithinBoundaries(x: Int, y: Int, board: List[List[Cell]]): Boolean ={
       if (IsWithinBoundaries(x, y, board))
@@ -202,6 +202,4 @@ object Main {
     val newBoard: List[List[Cell]] = board.updated(x, board(x).updated(y, Mine(false)))
     return newBoard
   }
-
-
 }
